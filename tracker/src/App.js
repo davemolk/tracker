@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import AddTask from './components/AddTask'
 import Header from './components/Header'
 import Tasks from './components/Tasks'
 
@@ -26,18 +27,39 @@ function App() {
     }
   ])
 
+  const [showAddTask, setShowAddTask] = useState(false)
+
   const title = "Tracker"
-  const onClick = () => {
-    console.log('clicked')
+
+  const onAdd = () => {
+    setShowAddTask(!showAddTask)
   }
+
+
+  const addTask = (task) => {
+    const id = Math.floor(Math.random() * 1000) + 1
+    const newTask = {...task, id}
+    setTasks([...tasks, newTask])
+  }
+
   const deleteTask = (id) => {
     setTasks(tasks.filter(task => task.id !== id))
   }
+
+  const toggleReminder = (id) => {
+    setTasks(tasks.map(task => (
+      task.id === id ?
+      {...task, reminder: !task.reminder} :
+      task
+    )))
+  }
+
   return (
     <div className="container">
-      <Header title={title} onClick={onClick} />
+      <Header title={title} onAdd={onAdd} showAdd={showAddTask} />
+      {showAddTask && <AddTask onAdd={addTask} />}
       { tasks.length > 0 ?
-      <Tasks tasks={tasks} onDelete={deleteTask} /> :
+      <Tasks tasks={tasks} onDelete={deleteTask} onDoubleClick={toggleReminder} /> :
       'You have no tasks!'}
     </div>
   );
